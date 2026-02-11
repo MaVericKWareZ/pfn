@@ -1,0 +1,98 @@
+# Local docker-compose for quick-start development
+# For hot-reload development, use: docker compose -f docker-compose.dev.yml up --build
+# For production, use: docker compose -f docker-compose.prod.yml up -d
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: pfn-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD:-adminpass}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE:-cavetalk}
+      - PFN_MONGO_USER=${PFN_MONGO_USER:-pfn_user}
+      - PFN_MONGO_PASSWORD=${PFN_MONGO_PASSWORD:-pfn_pass}
+    volumes:
+      - pfn-mongo-data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - pfn-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pfn-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MONGODB_URI=${MONGODB_URI:-mongodb://${PFN_MONGO_USER:-pfn_user}:${PFN_MONGO_PASSWORD:-pfn_pass}@mongo:27017/cavetalk?authSource=cavetalk}
+      - CORS_ORIGIN=http://localhost:3000
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "const http = require('http'); http.get('http://localhost:3001/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - pfn-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
+    container_name: pfn-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "const http = require('http'); http.get('http://localhost:3000', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - pfn-network
+
+volumes:
+  pfn-mongo-data:
+    driver: local
+
+networks:
+  pfn-network:
+    driver: bridge

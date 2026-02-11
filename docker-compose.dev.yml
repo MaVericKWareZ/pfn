@@ -1,0 +1,78 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: pfn-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD:-adminpass}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE:-cavetalk}
+      - PFN_MONGO_USER=${PFN_MONGO_USER:-pfn_user}
+      - PFN_MONGO_PASSWORD=${PFN_MONGO_PASSWORD:-pfn_pass}
+    volumes:
+      - pfn-mongo-data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - pfn-network-dev
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: builder
+    container_name: pfn-backend-dev
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - MONGODB_URI=${MONGODB_URI:-mongodb://${PFN_MONGO_USER:-pfn_user}:${PFN_MONGO_PASSWORD:-pfn_pass}@mongo:27017/cavetalk?authSource=cavetalk}
+      - CORS_ORIGIN=http://localhost:3000
+    volumes:
+      - ./backend/src:/app/src:ro
+    command: npm run start:dev
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - pfn-network-dev
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: builder
+      args:
+        - NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
+    container_name: pfn-frontend-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
+    volumes:
+      - ./frontend/src:/app/src:ro
+    command: npm run dev
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - pfn-network-dev
+
+volumes:
+  pfn-mongo-data:
+    driver: local
+
+networks:
+  pfn-network-dev:
+    driver: bridge
