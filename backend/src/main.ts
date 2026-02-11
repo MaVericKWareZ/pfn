@@ -1,8 +1,16 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
+import { Logger, LogLevel } from "@nestjs/common";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const logLevels: LogLevel[] =
+    process.env.NODE_ENV === "production"
+      ? ["error", "warn"]
+      : ["error", "warn", "log"];
+
+  const app = await NestFactory.create(AppModule, {
+    logger: logLevels,
+  });
 
   const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:3000";
   app.enableCors({
@@ -14,7 +22,7 @@ async function bootstrap() {
   const port = process.env.PORT ?? 3001;
   await app.listen(port);
 
-  console.log(`🎮 PFN Backend running on http://localhost:${port}`);
+  Logger.log(`🎮 PFN Backend running on http://localhost:${port}`, "Bootstrap");
 }
 
 bootstrap();

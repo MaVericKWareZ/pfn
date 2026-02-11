@@ -39,7 +39,7 @@ export function WinnerAnnouncement({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
       {showConfetti && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {[...Array(50)].map((_, i) => (
@@ -62,119 +62,125 @@ export function WinnerAnnouncement({
         </div>
       )}
 
-      <div className="relative max-w-4xl w-full mx-4 bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 rounded-2xl shadow-2xl overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+      <div className="relative max-w-4xl w-full max-h-[90vh] bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
 
-        <div className="relative p-8 text-center">
-          <div className="mb-6 animate-bounce-slow">
-            <Trophy className="w-24 h-24 mx-auto text-yellow-400 drop-shadow-2xl" />
-          </div>
-
-          <h1 className="text-6xl font-black text-white mb-4 drop-shadow-lg animate-pulse-slow">
-            {winningTeam ? `${winningTeam.name} WINS!` : "GAME OVER!"}
-          </h1>
-
-          <div className="text-3xl font-bold text-yellow-300 mb-8">
-            Final Score: {winningTeam?.score || 0} Points
-          </div>
-
-          {!showStats && (
-            <div className="text-white/60 animate-pulse">
-              Loading statistics...
+        <div className="relative overflow-y-auto flex-1">
+          <div className="p-4 sm:p-6 md:p-8 text-center">
+            <div className="mb-4 sm:mb-6 animate-bounce-slow">
+              <Trophy className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto text-yellow-400 drop-shadow-2xl" />
             </div>
-          )}
 
-          {showStats && (
-            <div className="mt-8 animate-fade-in">
-              <div className="bg-black/30 rounded-xl p-6 mb-6">
-                <h2 className="text-2xl font-bold text-white mb-4">
-                  Game Summary
-                </h2>
-                <div className="grid grid-cols-2 gap-4 text-white">
-                  <div className="bg-white/10 rounded-lg p-4">
-                    <div className="text-sm text-white/60">Total Rounds</div>
-                    <div className="text-2xl font-bold">
-                      {gameEndedData.totalRounds}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-3 sm:mb-4 drop-shadow-lg animate-pulse-slow">
+              {winningTeam ? `${winningTeam.name} WINS!` : "GAME OVER!"}
+            </h1>
+
+            <div className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-300 mb-6 sm:mb-8">
+              Final Score: {winningTeam?.score || 0} Points
+            </div>
+
+            {!showStats && (
+              <div className="text-white/60 animate-pulse">
+                Loading statistics...
+              </div>
+            )}
+
+            {showStats && (
+              <div className="mt-6 sm:mt-8 animate-fade-in">
+                <div className="bg-black/30 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
+                  <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
+                    Game Summary
+                  </h2>
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 text-white">
+                    <div className="bg-white/10 rounded-lg p-3 sm:p-4">
+                      <div className="text-xs sm:text-sm text-white/60">
+                        Total Rounds
+                      </div>
+                      <div className="text-xl sm:text-2xl font-bold">
+                        {gameEndedData.totalRounds}
+                      </div>
                     </div>
-                  </div>
-                  <div className="bg-white/10 rounded-lg p-4">
-                    <div className="text-sm text-white/60">Game Duration</div>
-                    <div className="text-2xl font-bold">
-                      {formatDuration(gameEndedData.gameDuration)}
+                    <div className="bg-white/10 rounded-lg p-3 sm:p-4">
+                      <div className="text-xs sm:text-sm text-white/60">
+                        Game Duration
+                      </div>
+                      <div className="text-xl sm:text-2xl font-bold">
+                        {formatDuration(gameEndedData.gameDuration)}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="bg-black/30 rounded-xl p-6 mb-6">
-                <h2 className="text-2xl font-bold text-white mb-4">
-                  Team Performance
-                </h2>
-                <div className="space-y-3">
-                  {gameEndedData.teams.map((team) => (
-                    <div
-                      key={team.id}
-                      className={`bg-white/10 rounded-lg p-4 ${
-                        team.id === gameEndedData.winningTeamId
-                          ? "ring-2 ring-yellow-400"
-                          : ""
-                      }`}
+                <div className="bg-black/30 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
+                  <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
+                    Team Performance
+                  </h2>
+                  <div className="space-y-2 sm:space-y-3">
+                    {gameEndedData.teams.map((team) => (
+                      <div
+                        key={team.id}
+                        className={`bg-white/10 rounded-lg p-3 sm:p-4 ${
+                          team.id === gameEndedData.winningTeamId
+                            ? "ring-2 ring-yellow-400"
+                            : ""
+                        }`}
+                      >
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-lg sm:text-xl font-bold text-white">
+                            {team.name}
+                          </span>
+                          <span className="text-xl sm:text-2xl font-black text-yellow-300">
+                            {team.score}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-xs sm:text-sm text-white/80">
+                          <div>
+                            <div className="text-white/60">Attempted</div>
+                            <div className="font-semibold">
+                              {team.totalCardsAttempted}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-white/60">Completed</div>
+                            <div className="font-semibold text-green-400">
+                              {team.totalCardsCompleted}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-white/60">Skipped</div>
+                            <div className="font-semibold text-red-400">
+                              {team.totalCardsSkipped}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <GameStatsTable roundStats={gameEndedData.roundStats} />
+
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mt-4 sm:mt-6">
+                  {onCreateNewGame && (
+                    <button
+                      onClick={onCreateNewGame}
+                      className="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-green-600 text-white rounded-lg font-bold text-base sm:text-lg hover:bg-green-700 transition-colors"
                     >
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-xl font-bold text-white">
-                          {team.name}
-                        </span>
-                        <span className="text-2xl font-black text-yellow-300">
-                          {team.score}
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2 text-sm text-white/80">
-                        <div>
-                          <div className="text-white/60">Attempted</div>
-                          <div className="font-semibold">
-                            {team.totalCardsAttempted}
-                          </div>
-                        </div>
-                        <div>
-                          <div className="text-white/60">Completed</div>
-                          <div className="font-semibold text-green-400">
-                            {team.totalCardsCompleted}
-                          </div>
-                        </div>
-                        <div>
-                          <div className="text-white/60">Skipped</div>
-                          <div className="font-semibold text-red-400">
-                            {team.totalCardsSkipped}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                      Create New Game
+                    </button>
+                  )}
+                  {onClose && (
+                    <button
+                      onClick={onClose}
+                      className="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-white text-purple-900 rounded-lg font-bold text-base sm:text-lg hover:bg-yellow-300 transition-colors"
+                    >
+                      Close
+                    </button>
+                  )}
                 </div>
               </div>
-
-              <GameStatsTable roundStats={gameEndedData.roundStats} />
-
-              <div className="flex gap-4 justify-center mt-6">
-                {onCreateNewGame && (
-                  <button
-                    onClick={onCreateNewGame}
-                    className="px-8 py-3 bg-green-600 text-white rounded-lg font-bold text-lg hover:bg-green-700 transition-colors"
-                  >
-                    Create New Game
-                  </button>
-                )}
-                {onClose && (
-                  <button
-                    onClick={onClose}
-                    className="px-8 py-3 bg-white text-purple-900 rounded-lg font-bold text-lg hover:bg-yellow-300 transition-colors"
-                  >
-                    Close
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 

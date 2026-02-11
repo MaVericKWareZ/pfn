@@ -21,6 +21,7 @@ export default function SharedDisplayPage() {
     gameEnded,
     cardRevealed,
     reconnect,
+    watchRoom,
   } = useGameSocket();
 
   useEffect(() => {
@@ -28,11 +29,13 @@ export default function SharedDisplayPage() {
       const savedPlayerId = localStorage.getItem("pfn_playerId");
       if (savedPlayerId) {
         reconnect(code, savedPlayerId);
+      } else {
+        watchRoom(code);
       }
     }
-  }, [isConnected, code, reconnect]);
+  }, [isConnected, code, reconnect, watchRoom]);
 
-  if (!roomState && !gameState) {
+  if (!isConnected || (!roomState && !gameState)) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-caveman-dark">
         <div className="text-center">

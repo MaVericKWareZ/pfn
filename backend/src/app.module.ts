@@ -26,6 +26,14 @@ import { HealthController } from "./health/health.controller";
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         uri: configService.get<string>("MONGODB_URI"),
+        autoIndex: false,
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+        family: 4,
+        connectionFactory: (connection) => {
+          connection.set("debug", false);
+          return connection;
+        },
       }),
       inject: [ConfigService],
     }),

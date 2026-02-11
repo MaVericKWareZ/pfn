@@ -43,6 +43,7 @@ export enum ClientEvent {
   TURN_SKIP = "turn:skip",
   TURN_NO = "turn:no",
   PLAYER_RECONNECT = "player:reconnect",
+  ROOM_WATCH = "room:watch",
 }
 
 export enum ServerEvent {

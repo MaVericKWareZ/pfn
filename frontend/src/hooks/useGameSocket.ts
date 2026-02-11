@@ -329,6 +329,10 @@ export function useGameSocket() {
     });
   }, []);
 
+  const watchRoom = useCallback((roomCode: RoomCode) => {
+    socketRef.current?.emit(ClientEvent.ROOM_WATCH, { roomCode });
+  }, []);
+
   const endGame = useCallback(() => {
     if (state.roomCode) {
       socketRef.current?.emit(ClientEvent.GAME_END, {
@@ -352,5 +356,6 @@ export function useGameSocket() {
     skipCard,
     pressNo,
     reconnect,
+    watchRoom,
   };
 }

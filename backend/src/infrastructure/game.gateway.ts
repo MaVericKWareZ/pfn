@@ -492,6 +492,32 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
+  @SubscribeMessage(ClientEvent.ROOM_WATCH)
+  handleRoomWatch(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { roomCode: string },
+  ): void {
+    try {
+      const room = this.roomService.getRoom(payload.roomCode);
+      if (!room) {
+        throw new Error("Room not found");
+      }
+
+      client.join(payload.roomCode);
+      // We don't add to socketToPlayer map because spectators don't satisfy "player" checks
+      // and shouldn't be handled in disconnect/reconnect logic as active players
+
+      this.emitRoomState(payload.roomCode);
+      if (room.gameState !== GameState.LOBBY) {
+        this.emitGameState(payload.roomCode);
+      }
+    } catch (error) {
+      client.emit(ServerEvent.ROOM_ERROR, {
+        message: error instanceof Error ? error.message : "Failed to watch room",
+      });
+    }
+  }
+
   private onTimerExpired(roomCode: string): void {
     const result = this.gameService.handleTimerExpired(roomCode);
     if (!result) return;
