@@ -11,9 +11,9 @@ export default function Home() {
   const [playerName, setPlayerName] = useState("");
   const [joinCode, setJoinCode] = useState("");
   const [scoreboardCode, setScoreboardCode] = useState("");
-  const [mode, setMode] = useState<"menu" | "create" | "join" | "scoreboard">(
-    "menu",
-  );
+  const [mode, setMode] = useState<
+    "menu" | "create" | "join" | "scoreboard" | "rules"
+  >("menu");
 
   // Clear any stale room data when returning to home page
   useEffect(() => {
@@ -90,6 +90,12 @@ export default function Home() {
               className="w-full stone-button text-white text-xl py-4 px-6 disabled:opacity-50"
             >
               View Scoreboard
+            </button>
+            <button
+              onClick={() => setMode("rules")}
+              className="w-full stone-button text-white text-xl py-4 px-6"
+            >
+              How to Play 📜
             </button>
           </div>
         )}
@@ -194,6 +200,172 @@ export default function Home() {
                 View
               </button>
             </div>
+          </div>
+        )}
+
+        {mode === "rules" && (
+          <div className="caveman-card p-6 space-y-5 max-h-[75vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold text-caveman-brown text-center">
+              How to Play 📜
+            </h2>
+
+            {/* The Goal */}
+            <div className="bg-white/30 rounded-lg p-4">
+              <h3 className="text-lg font-bold text-caveman-brown mb-1">
+                🎯 The Goal
+              </h3>
+              <p className="text-caveman-brown text-sm leading-relaxed">
+                Two teams compete to score the most points by guessing words.
+                The catch? The clue-giver (the <strong>Poet</strong>) can only
+                use <strong>one-syllable words</strong> to describe the answer.
+                Talk like a caveman!
+              </p>
+            </div>
+
+            {/* How a Turn Works */}
+            <div className="bg-white/30 rounded-lg p-4">
+              <h3 className="text-lg font-bold text-caveman-brown mb-1">
+                🗣️ How a Turn Works
+              </h3>
+              <ol className="text-caveman-brown text-sm leading-relaxed list-decimal list-inside space-y-1">
+                <li>
+                  The app picks a <strong>Poet</strong> from the active team.
+                </li>
+                <li>The other team picks a <strong>Judge</strong>.</li>
+                <li>
+                  The Poet sees a card with an <strong>easy word</strong> (1 pt)
+                  and a <strong>hard phrase</strong> (3 pts).
+                </li>
+                <li>
+                  A <strong>60-second timer</strong> starts.
+                </li>
+                <li>
+                  The Poet gives clues <strong>out loud</strong> using only
+                  one-syllable words.
+                </li>
+                <li>
+                  Teammates shout their guesses — no typing needed!
+                </li>
+                <li>
+                  Correct guesses score points and a new card appears
+                  automatically. Keep going until time runs out!
+                </li>
+              </ol>
+            </div>
+
+            {/* Scoring */}
+            <div className="bg-white/30 rounded-lg p-4">
+              <h3 className="text-lg font-bold text-caveman-brown mb-1">
+                📊 Scoring
+              </h3>
+              <div className="text-caveman-brown text-sm space-y-1">
+                <p>
+                  <span className="inline-block bg-green-600 text-white font-bold px-2 py-0.5 rounded text-xs mr-1">
+                    +1
+                  </span>{" "}
+                  Easy word guessed correctly
+                </p>
+                <p>
+                  <span className="inline-block bg-green-700 text-white font-bold px-2 py-0.5 rounded text-xs mr-1">
+                    +3
+                  </span>{" "}
+                  Hard phrase guessed correctly
+                </p>
+                <p>
+                  <span className="inline-block bg-red-600 text-white font-bold px-2 py-0.5 rounded text-xs mr-1">
+                    −1
+                  </span>{" "}
+                  NO! penalty or Skip
+                </p>
+              </div>
+            </div>
+
+            {/* The NO! Rule */}
+            <div className="bg-white/30 rounded-lg p-4">
+              <h3 className="text-lg font-bold text-caveman-brown mb-1">
+                🔨 The NO! Rule
+              </h3>
+              <p className="text-caveman-brown text-sm leading-relaxed">
+                The Judge listens carefully. If the Poet uses a{" "}
+                <strong>multi-syllable word</strong>, says part of the answer, or
+                breaks any rule — the Judge smashes the{" "}
+                <strong className="text-red-700">NO!</strong> button. The team
+                loses 1 point, the card is tossed, and a new one appears. The
+                turn keeps going!
+              </p>
+            </div>
+
+            {/* Skip */}
+            <div className="bg-white/30 rounded-lg p-4">
+              <h3 className="text-lg font-bold text-caveman-brown mb-1">
+                ⏭️ Skip
+              </h3>
+              <p className="text-caveman-brown text-sm leading-relaxed">
+                Stuck on a tough card? The Poet can <strong>Skip</strong> it for
+                a <strong>−1 point penalty</strong>. A new card is drawn and the
+                timer keeps running.
+              </p>
+            </div>
+
+            {/* Playing with this App */}
+            <div className="bg-caveman-orange/20 rounded-lg p-4 border border-caveman-orange/40">
+              <h3 className="text-lg font-bold text-caveman-brown mb-1">
+                📱 Party Setup Guide
+              </h3>
+              <ol className="text-caveman-brown text-sm leading-relaxed list-decimal list-inside space-y-1">
+                <li>
+                  One person taps <strong>Create Game</strong> and gets a room
+                  code.
+                </li>
+                <li>
+                  Everyone else opens this site on their phone and taps{" "}
+                  <strong>Join Game</strong> with the room code.
+                </li>
+                <li>Split into two teams in the lobby.</li>
+                <li>
+                  The host starts the game — all clue-giving and guessing
+                  happens <strong>out loud</strong>, not in the app!
+                </li>
+                <li>
+                  <em>Optional:</em> Put a TV or laptop on the{" "}
+                  <strong>Scoreboard</strong> view so everyone can see the timer
+                  and scores from across the room.
+                </li>
+              </ol>
+            </div>
+
+            {/* Tips */}
+            <div className="bg-white/30 rounded-lg p-4">
+              <h3 className="text-lg font-bold text-caveman-brown mb-1">
+                💡 Tips for the Best Game
+              </h3>
+              <ul className="text-caveman-brown text-sm leading-relaxed list-disc list-inside space-y-1">
+                <li>Sit in a circle so the Poet can face their team.</li>
+                <li>Speak loudly — this is a party game, not a library!</li>
+                <li>
+                  Judges: stay sharp and hit NO! fast. It&apos;s the best part.
+                </li>
+                <li>
+                  Don&apos;t overthink — fast, silly clues work better than clever
+                  ones.
+                </li>
+                <li>
+                  Use a shared screen for the scoreboard to keep the energy
+                  high.
+                </li>
+                <li>
+                  Play multiple rounds — teams get better (and funnier) over
+                  time!
+                </li>
+              </ul>
+            </div>
+
+            <button
+              onClick={() => setMode("menu")}
+              className="w-full stone-button text-white py-3 px-4 mt-2"
+            >
+              ← Back to Menu
+            </button>
           </div>
         )}
       </div>
