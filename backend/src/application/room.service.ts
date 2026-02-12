@@ -243,7 +243,7 @@ export class RoomService implements IRoomService {
       throw new Error("At least 2 teams with players are required");
     }
 
-    const cards = this.contentPackRepository.getCards();
+    const cards = this.contentPackRepository.getAllCards();
     const deckManager = new DeckManager(cards);
 
     // Update config with maxTurns if provided
